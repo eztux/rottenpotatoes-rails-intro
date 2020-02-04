@@ -11,14 +11,29 @@ class MoviesController < ApplicationController
   end
 
   def index
+    ratingVals = get_ratings()
+    @all_ratings = ratingVals
+    
     if params[:orderNameAsc] == "true"
-      puts "I should be reordering by TITLE now"
       @movies = Movie.all.reorder(:title)
     else
-      puts "I should be using RATING now"
-      @movies = Movie.all.reorder(:rating)
+      @movies = Movie.all.reorder(nil)
     end
-    render action: 'index.html.haml'
+    
+    # Ratings handler
+    selectedRatings = Array.new
+    if params[:ratings] != nil
+      params[:ratings].each do |key, value|
+        selectedRatings.push key
+      end
+      # puts selectedRatings
+      # puts Movie.all.length
+      # @movies = Movie.with_ratings(selectedRatings)
+      # puts Movie.all.length
+      
+      @movies = Movie.with_ratings(selectedRatings)
+    end
+    
   end
 
   def new
@@ -47,6 +62,17 @@ class MoviesController < ApplicationController
     @movie.destroy
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_path
+  end
+  
+  # User methods
+  def get_ratings
+    ary = Array.new
+    Movie.all.each do |row|
+      if !ary.include? row.rating
+        ary.push row.rating
+      end
+    end
+    return ary
   end
   
 end
