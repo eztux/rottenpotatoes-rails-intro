@@ -11,7 +11,14 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
+    if params[:orderNameAsc] == "true"
+      puts "I should be reordering by TITLE now"
+      @movies = Movie.all.reorder(:title)
+    else
+      puts "I should be using RATING now"
+      @movies = Movie.all.reorder(:rating)
+    end
+    render action: 'index.html.haml'
   end
 
   def new
@@ -41,5 +48,5 @@ class MoviesController < ApplicationController
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_path
   end
-
+  
 end
