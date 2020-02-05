@@ -8,35 +8,67 @@ class MoviesController < ApplicationController
     id = params[:id] # retrieve movie ID from URI route
     @movie = Movie.find(id) # look up movie by unique ID
     # will render app/views/movies/show.<extension> by default
+    
+    # Update flash and redirect using it
+    flash[:order] = session[:order]
+    flash[:ratings] = session[:ratings]
   end
 
   def index
+    
+    
+    # Get all possible rating values
     ratingVals = get_ratings()
     @all_ratings = ratingVals
     
-    if params[:orderNameAsc] == "true"
-      @movies = Movie.all.reorder(:title)
-      @titleClass = "hilite, bg-warning"
-    elsif params[:orderDateAsc] == "true"
-      @movies = Movie.all.reorder(:release_date)
-      @ratingClass = "hilite, bg-warning"
-    else
-      @movies = Movie.all.reorder(nil)
+    # initialize session value if nil
+    if(session[:ratings] == nil or (session[:ratings] != params[:ratings] and params[:ratings] != nil))
+      session[:ratings] = params[:ratings]
     end
     
     # Ratings handler
     selectedRatings = Array.new
-    if params[:ratings] != nil
-      params[:ratings].each do |key, value|
+    if session[:ratings] != nil
+      session[:ratings].each do |key, value|
         selectedRatings.push key
       end
-      # puts selectedRatings
-      # puts Movie.all.length
-      # @movies = Movie.with_ratings(selectedRatings)
-      # puts Movie.all.length
-      
       @movies = Movie.with_ratings(selectedRatings)
+      
     end
+    
+    # initialize session value of order
+    if(session[:order] == nil or (session[:order] != params[:order] and params[:order] != nil))
+      session[:order] = params[:order]
+    end
+    
+    # Order handler
+    if session[:order] == "title"
+      @movies = @movies.all.reorder(:title)
+      @titleClass = "hilite, bg-warning"
+      session[:order] = "title"
+      
+    elsif session[:order] == "date"
+      @movies = @movies.all.reorder(:release_date)
+      @ratingClass = "hilite, bg-warning"
+      session[:order] = "date"
+      
+    else
+      puts "I didn't get a proper order!"
+    end
+    
+    params[:order] = session[:order]
+    params[:ratings] = session[:ratings]
+    
+    # If fixing the params, stop here
+    if(flash[:redirect])
+      return
+    end
+    
+    flash[:redirect] = true
+    flash.keep
+    
+    redirect_to movies_path params
+    
     
   end
 
@@ -65,7 +97,12 @@ class MoviesController < ApplicationController
     @movie = Movie.find(params[:id])
     @movie.destroy
     flash[:notice] = "Movie '#{@movie.title}' deleted."
-    redirect_to movies_path
+    
+    # Update flash and redirect using it
+    flash[:order] = session[:order]
+    flash[:ratings] = session[:ratings]
+    
+    redirect_to movies_path flash
   end
   
   # User methods
