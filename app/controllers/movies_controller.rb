@@ -16,6 +16,10 @@ class MoviesController < ApplicationController
     
     if params[:orderNameAsc] == "true"
       @movies = Movie.all.reorder(:title)
+      @titleClass = "hilite, bg-warning"
+    elsif params[:orderDateAsc] == "true"
+      @movies = Movie.all.reorder(:release_date)
+      @ratingClass = "hilite, bg-warning"
     else
       @movies = Movie.all.reorder(nil)
     end
