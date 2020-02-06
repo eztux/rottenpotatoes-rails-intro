@@ -21,6 +21,12 @@ class MoviesController < ApplicationController
     ratingVals = get_ratings()
     @all_ratings = ratingVals
     
+    # If there is no session value or param value return all movies
+    if session[:ratings] == nil and session[:order] == nil and params[:order] == nil and params[:ratings] == nil
+      @movies = Movie.all
+      return
+    end
+    
     # initialize session value if nil
     if(session[:ratings] == nil or (session[:ratings] != params[:ratings] and params[:ratings] != nil))
       session[:ratings] = params[:ratings]
