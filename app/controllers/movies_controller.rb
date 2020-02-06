@@ -47,6 +47,11 @@ class MoviesController < ApplicationController
       session[:order] = params[:order]
     end
     
+    # Make sure that @movies is populated
+    if @movies == nil
+      @movies = Movie.all
+    end
+    
     # Order handler
     if session[:order] == "title"
       @movies = @movies.all.reorder(:title)
