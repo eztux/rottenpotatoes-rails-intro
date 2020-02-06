@@ -18,6 +18,7 @@ class MoviesController < ApplicationController
     
     
     # Get all possible rating values
+    @all_ratings = Array.new
     ratingVals = get_ratings()
     @all_ratings = ratingVals
     
