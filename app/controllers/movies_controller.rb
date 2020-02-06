@@ -34,12 +34,19 @@ class MoviesController < ApplicationController
     
     # Ratings handler
     selectedRatings = Array.new
+    @usedRatings = Array.new
     if session[:ratings] != nil
       session[:ratings].each do |key, value|
         selectedRatings.push key
       end
       @movies = Movie.with_ratings(selectedRatings)
+      @usedRatings = selectedRatings
       
+    end
+    
+    # Used to make sure all checkmarks are checked in the beginning
+    if @usedRatings.length == 0
+      @usedRatings = @all_ratings
     end
     
     # initialize session value of order
@@ -55,12 +62,12 @@ class MoviesController < ApplicationController
     # Order handler
     if session[:order] == "title"
       @movies = @movies.all.reorder(:title)
-      @titleClass = "hilite, bg-warning"
+      @titleClass = "hilite bg-warning"
       session[:order] = "title"
       
     elsif session[:order] == "date"
       @movies = @movies.all.reorder(:release_date)
-      @ratingClass = "hilite, bg-warning"
+      @ratingClass = "hilite bg-warning"
       session[:order] = "date"
       
     else
