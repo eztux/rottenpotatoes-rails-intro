@@ -15,10 +15,10 @@ class MoviesController < ApplicationController
   end
 
   def index
-    
+    # Initialized to prevent errors when sent to views
+    @usedRatings = Array.new
     
     # Get all possible rating values
-    @all_ratings = Array.new
     ratingVals = get_ratings()
     @all_ratings = ratingVals
     
@@ -35,7 +35,7 @@ class MoviesController < ApplicationController
     
     # Ratings handler
     selectedRatings = Array.new
-    @usedRatings = Array.new
+
     if session[:ratings] != nil
       session[:ratings].each do |key, value|
         selectedRatings.push key
