@@ -15,12 +15,14 @@ class MoviesController < ApplicationController
   end
 
   def index
-    # Initialized to prevent errors when sent to views
-    @usedRatings = Array.new
+    
     
     # Get all possible rating values
     ratingVals = get_ratings()
     @all_ratings = ratingVals
+    
+    # Initialized to prevent errors when sent to views
+    @usedRatings = ratingVals
     
     # If there is no session value or param value return all movies
     if session[:ratings] == nil and session[:order] == nil and params[:order] == nil and params[:ratings] == nil
